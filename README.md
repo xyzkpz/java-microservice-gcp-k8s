@@ -39,6 +39,20 @@ A simple Java Spring Boot microservice designed to be deployed on Google Kuberne
 
 See the comprehensive [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed step-by-step instructions.
 
+### 🆓 Free Deployment Options
+
+**Don't have a GCP account or want to test for free?**
+
+Check out [FREE_DEPLOYMENT_OPTIONS.md](FREE_DEPLOYMENT_OPTIONS.md) for a complete guide on:
+- ✅ **Free Kubernetes playgrounds** (no signup required!)
+- ✅ **Cloud provider free tiers** ($200-$300 credits)
+- ✅ **Always-free options** for long-term learning
+
+**Quick Links:**
+- **Instant Testing (No Signup):** [Killercoda](https://killercoda.com/playgrounds/scenario/kubernetes)
+- **4-Hour Free Sessions:** [Play with Kubernetes](https://labs.play-with-k8s.com/)
+- **Best for Production Testing:** [GCP Free Trial](https://cloud.google.com/free) ($300 credit)
+
 **Quick deployment:**
 
 ```bash
