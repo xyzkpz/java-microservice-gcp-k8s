@@ -1,92 +1,116 @@
-# 🐳 Running the Application in Docker
+# 🐳 End-to-End Guide: Running Java Microservice in Docker on Windows
 
-This guide explains how to build and run the Java Microservice locally using Docker. This ensures the application runs in the exact same environment as it will in production.
+This guide provides step-by-step instructions to clone, build, and run the application on your local Windows machine using Docker.
 
 ## ✅ Prerequisites
 
-- **Docker Desktop** installed and running.
-- **PowerShell** or **WSL (Ubuntu)** terminal.
+Before you begin, ensure you have the following installed:
+1.  **Git**: [Download Git for Windows](https://git-scm.com/download/win)
+2.  **Docker Desktop**: [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+    *   *Make sure Docker Desktop is running before proceeding.*
 
 ---
 
-## 🚀 Step 1: Build the Docker Image
+## 🚀 Step-by-Step Instructions
 
-You don't need to install Maven or Java locally! The Dockerfile handles the build process for you.
+### Step 1: Clone the Repository
+Open **PowerShell** or **Command Prompt** and run the following commands to download the project code.
 
-Run this command in the root directory of the project (where `Dockerfile` is located):
+```powershell
+# 1. Create a directory for your projects (optional)
+mkdir C:\Projects
+cd C:\Projects
 
-```bash
+# 2. Clone the repository
+git clone https://github.com/xyzkpz/java-microservice-gcp-k8s.git
+```
+
+### Step 2: Navigate to the Project Directory
+Move into the folder you just downloaded.
+
+```powershell
+cd java-microservice-gcp-k8s
+```
+
+### Step 3: Build the Docker Image
+This step packages the Java application into a Docker image. You do **not** need Java or Maven installed on your machine; Docker handles everything.
+
+```powershell
 # Build the image and tag it as 'java-microservice'
 docker build -t java-microservice:latest .
 ```
+*Tip: The first build may take a few minutes to download dependencies. Please be patient.*
 
-> **Note:** The first build might take a few minutes as it downloads Maven dependencies. Subsequent builds will be much faster.
+### Step 4: Run the Application Container
+Start the application in a container. We map port `8080` inside the container to port `8080` on your Windows machine.
 
----
-
-## ▶️ Step 2: Run the Container
-
-Once the image is built, run it as a container. We map port `8080` of the container to port `8080` on your machine.
-
-```bash
-# Run in detached mode (background)
+```powershell
+# Run in the background (detached mode)
 docker run -d -p 8080:8080 --name java-app java-microservice:latest
-
-# OR run in interactive mode (to see logs immediately)
-docker run -p 8080:8080 --name java-app java-microservice:latest
 ```
 
----
+### Step 5: Verify the Application is Running
+Check if the container is up and running.
 
-## 🧪 Step 3: Test the Application
+```powershell
+# List running containers
+docker ps
+```
+*You should see `java-app` in the list with status `Up`.*
 
-Open your browser or use `curl` to verify the app is running.
+### Step 6: Test the Service
+You can access the application using your web browser or terminal.
 
-**Browser URLs:**
-- Home: [http://localhost:8080](http://localhost:8080)
-- Health Check: [http://localhost:8080/health](http://localhost:8080/health)
-- Config: [http://localhost:8080/config](http://localhost:8080/config)
+**Option A: Web Browser**
+Click these links to open in your browser:
+*   **Home Page:** [http://localhost:8080](http://localhost:8080)
+*   **Health Check:** [http://localhost:8080/health](http://localhost:8080/health)
+*   **Configuration:** [http://localhost:8080/config](http://localhost:8080/config)
 
-**Command Line (PowerShell or WSL):**
-```bash
+**Option B: PowerShell / Terminal**
+```powershell
 curl http://localhost:8080/health
 ```
 
 ---
 
-## 🛠 Common Docker Commands
+## 🛑 Managing the Application
 
-Here are useful commands to manage your container:
+### Stop the Service
+When you are done, you can stop the container.
+```powershell
+docker stop java-app
+```
 
-| Action | Command |
-|--------|---------|
-| **View Logs** | `docker logs -f java-app` |
-| **Stop App** | `docker stop java-app` |
-| **Start App** | `docker start java-app` |
-| **Remove Container** | `docker rm -f java-app` |
-| **Remove Image** | `docker rmi java-microservice:latest` |
-| **List Containers** | `docker ps` |
+### Remove the Container
+If you want to remove the stopped container (to free up space or run a fresh instance):
+```powershell
+docker rm java-app
+```
+
+### View Application Logs
+If something isn't working, check the logs:
+```powershell
+docker logs -f java-app
+```
+*(Press `Ctrl+C` to exit the logs)*
 
 ---
 
-## 🔍 Troubleshooting
+## ❓ Troubleshooting
 
-**1. Port 8080 is already in use**
-If you see an error saying the port is allocated, try mapping to a different local port (e.g., 9090):
-```bash
-docker run -d -p 9090:8080 --name java-app java-microservice:latest
-```
-Then access at `http://localhost:9090`.
+**Error: "Bind for 0.0.0.0:8080 failed: port is already allocated"**
+*   **Cause:** Another application is using port 8080.
+*   **Fix:** Run the container on a different port (e.g., 9090):
+    ```powershell
+    docker run -d -p 9090:8080 --name java-app java-microservice:latest
+    ```
+    *Access at `http://localhost:9090`*
 
-**2. "Connection Refused"**
-- Ensure the container is running: `docker ps`
-- Check logs for startup errors: `docker logs java-app`
+**Error: "docker: command not found"**
+*   **Cause:** Docker Desktop is not installed or not added to your PATH.
+*   **Fix:** Install Docker Desktop and restart your terminal.
 
-**3. Rebuilding after code changes**
-If you modify the Java code, you must rebuild the image and restart the container:
-```bash
-docker stop java-app
-docker rm java-app
-docker build -t java-microservice:latest .
-docker run -d -p 8080:8080 --name java-app java-microservice:latest
-```
+**Error: "Cannot connect to the Docker daemon"**
+*   **Cause:** Docker Desktop is installed but not running.
+*   **Fix:** Open "Docker Desktop" from the Start menu and wait for the engine to start.
