@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-microservice
+  namespace: default
+  labels:
+    app: java-microservice
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: java-microservice
+  template:
+    metadata:
+      labels:
+        app: java-microservice
+    spec:
+      containers:
+      - name: java-microservice
+        image: gcr.io/YOUR_PROJECT_ID/java-microservice:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        # Inject ConfigMap values as environment variables
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.name
+        - name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.version
+        - name: APP_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.environment
+        - name: APP_MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.message
+        # Spring Boot uses different naming convention
+        - name: SPRING_APPLICATION_JSON
+          value: '{"app":{"name":"$(APP_NAME)","version":"$(APP_VERSION)","environment":"$(APP_ENVIRONMENT)","message":"$(APP_MESSAGE)"}}'
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
