@@ -86,10 +86,11 @@ kubectl get service java-microservice-service
 
 This project was developed and tested on Windows with WSL (Windows Subsystem for Linux).
 
-**WSL Installation Details:**
-```bash
-# Command used to check WSL version
-C:\> &"C:\Program Files\WSL\wsl.exe" --version
+#### WSL Installation Steps & Commands
+
+**Step 1: Check WSL Version**
+```powershell
+C:\...\java-k8s-gcp-deployment> &"C:\Program Files\WSL\wsl.exe" --version
 
 # Output:
 WSL version: 2.6.2.0
@@ -101,17 +102,66 @@ DXCore version: 10.0.26100.1-240331-1435.ge-release
 Windows version: 10.0.19045.6466
 ```
 
-**Installed WSL Distribution:**
-- **Ubuntu 24.04 LTS** (installed via `wsl --install Ubuntu-24.04`)
+**Step 2: List Available Distributions Online**
+```powershell
+C:\...\java-k8s-gcp-deployment> &"C:\Program Files\WSL\wsl.exe" --list --online
 
-**Prerequisites for Local Development:**
-- Windows 10 build 19041+ or Windows 11
-- WSL 2 installed ([Install WSL](https://github.com/microsoft/WSL/releases))
-- Docker Desktop for Windows with Kubernetes enabled
-- Java 17 or higher
-- Maven 3.6 or higher (can be installed in WSL)
+# Output:
+The following is a list of valid distributions that can be installed.
+Install using 'wsl.exe --install <Distro>'.
 
-**Automated Setup:**
+NAME                            FRIENDLY NAME
+Ubuntu                          Ubuntu
+Ubuntu-24.04                    Ubuntu 24.04 LTS
+Ubuntu-22.04                    Ubuntu 22.04 LTS
+Ubuntu-20.04                    Ubuntu 20.04 LTS
+Debian                          Debian GNU/Linux
+kali-linux                      Kali Linux Rolling
+openSUSE-Leap-15.6              openSUSE Leap 15.6
+# ... (and more distributions available)
+```
+
+**Step 3: Install Ubuntu 24.04 LTS**
+```powershell
+C:\...\java-k8s-gcp-deployment> &"C:\Program Files\WSL\wsl.exe" --install Ubuntu-24.04
+
+# Output (download progress):
+Downloading: Ubuntu 24.04 LTS
+[==========================100.0%==========================]
+
+Distribution successfully installed. It can be launched via 'wsl.exe -d Ubuntu-24.04'
+Launching Ubuntu-24.04...
+Provisioning the new WSL instance Ubuntu-24.04
+This might take a while...
+Create a default Unix user account: <your-username>
+New password: <enter-password>
+Retype new password: <confirm-password>
+```
+
+**Step 4: Verify Installation**
+```powershell
+C:\...\java-k8s-gcp-deployment> &"C:\Program Files\WSL\wsl.exe" --list --verbose
+
+# Output:
+  NAME              STATE           VERSION
+* docker-desktop    Running         2
+  Ubuntu-24.04      Running         2
+```
+
+✅ **Successfully Installed:** Ubuntu 24.04 LTS running on WSL 2
+
+#### Prerequisites for Local Development
+
+- **Operating System:** Windows 10 build 19041+ or Windows 11
+- **WSL 2:** Installed ([Download WSL](https://github.com/microsoft/WSL/releases))
+  - Recommended: WSL 2.6.2+
+  - Linux Distribution: Ubuntu 24.04 LTS or later
+- **Docker Desktop:** For Windows with Kubernetes enabled
+- **Java:** Version 17 or higher
+- **Maven:** Version 3.6 or higher (can be installed in WSL)
+
+#### Automated Setup Script
+
 Run the included PowerShell script to check and guide installation:
 ```powershell
 .\setup-system.ps1
@@ -119,7 +169,7 @@ Run the included PowerShell script to check and guide installation:
 
 This script will:
 - ✅ Detect your system specifications
-- ✅ Check WSL installation and distributions
+- ✅ Check WSL installation and distributions  
 - ✅ Check Docker Desktop installation
 - ✅ Verify Kubernetes is enabled
 - ✅ Provide download links and guidance if anything is missing
