@@ -1,5 +1,5 @@
-# System Detection and Docker Desktop Setup Script
-# This script detects your system and guides you through Docker Desktop installation
+# System Detection and Docker Desktop Setup Script with WSL Support
+# This script detects your system and guides you through WSL and Docker Desktop installation
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "System Detection & Docker Setup" -ForegroundColor Cyan
@@ -28,8 +28,80 @@ Write-Host "  RAM: $ramGB GB" -ForegroundColor White
 Write-Host "  Processor: $processorName" -ForegroundColor White
 Write-Host ""
 
-# Step 2: Check if Docker is already installed
-Write-Host "Step 2: Checking for Docker..." -ForegroundColor Yellow
+# Step 2: Check WSL (Windows Subsystem for Linux)
+Write-Host "Step 2: Checking WSL (Windows Subsystem for Linux)..." -ForegroundColor Yellow
+
+# Define WSL paths
+$wslExePath = "C:\Program Files\WSL\wsl.exe"
+$wslSystemPath = "wsl.exe"
+
+# Check if WSL is installed
+$wslInstalled = $false
+$wslCommand = $null
+
+if (Test-Path $wslExePath) {
+    $wslCommand = $wslExePath
+    $wslInstalled = $true
+    Write-Host "✓ WSL is installed at: $wslExePath" -ForegroundColor Green
+    
+    try {
+        $wslVersion = & $wslCommand --version 2>$null
+        if ($wslVersion) {
+            Write-Host "✓ WSL Version: $($wslVersion[0])" -ForegroundColor Green
+        }
+    }
+    catch {
+        Write-Host "⚠ Could not get WSL version" -ForegroundColor Yellow
+    }
+    
+    # Check for installed distributions
+    try {
+        $distros = & $wslCommand --list --quiet 2>$null
+        if ($distros -and $distros.Count -gt 0) {
+            $hasDistro = $false
+            Write-Host "✓ WSL Distributions installed:" -ForegroundColor Green
+            foreach ($distro in $distros) {
+                if ($distro.Trim()) {
+                    Write-Host "    - $($distro.Trim())" -ForegroundColor White
+                    $hasDistro = $true
+                }
+            }
+            if (!$hasDistro) {
+                Write-Host "⚠ WSL is installed but no Linux distribution found" -ForegroundColor Yellow
+                Write-Host "  Run: & '$wslCommand' --install Ubuntu-24.04" -ForegroundColor Gray
+            }
+        }
+        else {
+            Write-Host "⚠ WSL is installed but no Linux distribution found" -ForegroundColor Yellow
+            Write-Host "  Run: & '$wslCommand' --install Ubuntu-24.04" -ForegroundColor Gray
+        }
+    }
+    catch {
+        Write-Host "⚠ No WSL distributions installed yet" -ForegroundColor Yellow
+        Write-Host "  To install Ubuntu: & '$wslCommand' --install Ubuntu-24.04" -ForegroundColor Gray
+    }
+}
+else {
+    # Try system PATH
+    try {
+        $null = & $wslSystemPath --version 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $wslCommand = $wslSystemPath
+            $wslInstalled = $true
+            Write-Host "✓ WSL is installed (in system PATH)" -ForegroundColor Green
+        }
+    }
+    catch {
+        Write-Host "✗ WSL is not installed" -ForegroundColor Red
+        Write-Host "  Download WSL from: https://github.com/microsoft/WSL/releases" -ForegroundColor Yellow
+        Write-Host "  Or run: winget install Microsoft.WSL" -ForegroundColor Gray
+    }
+}
+
+Write-Host ""
+
+# Step 3: Check if Docker is already installed
+Write-Host "Step 3: Checking for Docker..." -ForegroundColor Yellow
 
 try {
     $dockerVersion = docker --version 2>$null
@@ -42,8 +114,8 @@ catch {
 }
 Write-Host ""
 
-# Step 3: Determine correct Docker version
-Write-Host "Step 3: Determining correct Docker Desktop version..." -ForegroundColor Yellow
+# Step 4: Determine correct Docker version
+Write-Host "Step 4: Determining correct Docker Desktop version..." -ForegroundColor Yellow
 
 $dockerDownloadUrl = ""
 $dockerFileName = ""
@@ -63,8 +135,8 @@ else {
 Write-Host "  Download URL: $dockerDownloadUrl" -ForegroundColor White
 Write-Host ""
 
-# Step 4: Check system requirements
-Write-Host "Step 4: Checking system requirements..." -ForegroundColor Yellow
+# Step 5: Check system requirements
+Write-Host "Step 5: Checking system requirements..." -ForegroundColor Yellow
 
 $meetsRequirements = $true
 
@@ -112,9 +184,9 @@ if (!$meetsRequirements) {
     Write-Host ""
 }
 
-# Step 5: Download Docker Desktop (if not installed)
+# Step 6: Download Docker Desktop (if not installed)
 if (!$dockerInstalled) {
-    Write-Host "Step 5: Downloading Docker Desktop..." -ForegroundColor Yellow
+    Write-Host "Step 6: Downloading Docker Desktop..." -ForegroundColor Yellow
     Write-Host "  This may take 5-10 minutes depending on your internet speed." -ForegroundColor Gray
     Write-Host ""
     
@@ -130,8 +202,8 @@ if (!$dockerInstalled) {
         Write-Host "✓ Download complete!" -ForegroundColor Green
         Write-Host ""
         
-        # Step 6: Install Docker Desktop
-        Write-Host "Step 6: Installing Docker Desktop..." -ForegroundColor Yellow
+        # Step 7: Install Docker Desktop
+        Write-Host "Step 7: Installing Docker Desktop..." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "IMPORTANT:" -ForegroundColor Red
         Write-Host "  1. The installer will open in a new window" -ForegroundColor Yellow
@@ -179,7 +251,7 @@ if (!$dockerInstalled) {
 }
 else {
     # Docker is installed, check if it's running
-    Write-Host "Step 5: Checking Docker status..." -ForegroundColor Yellow
+    Write-Host "Step 6: Checking Docker status..." -ForegroundColor Yellow
     
     try {
         docker ps 2>$null | Out-Null
@@ -187,7 +259,7 @@ else {
         
         # Check Kubernetes
         Write-Host ""
-        Write-Host "Step 6: Checking Kubernetes..." -ForegroundColor Yellow
+        Write-Host "Step 7: Checking Kubernetes..." -ForegroundColor Yellow
         
         try {
             kubectl version --client 2>$null | Out-Null
@@ -243,6 +315,14 @@ Write-Host "Your System:" -ForegroundColor Yellow
 Write-Host "  OS: $osName ($osArch)" -ForegroundColor White
 Write-Host "  RAM: $ramGB GB" -ForegroundColor White
 Write-Host "  Build: $buildNumber" -ForegroundColor White
+
+if ($wslInstalled) {
+    Write-Host "  WSL: ✓ Installed" -ForegroundColor Green
+}
+else {
+    Write-Host "  WSL: ✗ Not installed" -ForegroundColor Red
+}
+
 Write-Host ""
 
 if ($dockerInstalled) {
@@ -259,13 +339,19 @@ if ($dockerInstalled) {
 else {
     Write-Host "Docker Status:" -ForegroundColor Yellow
     Write-Host "  Installed: ✗ No" -ForegroundColor Red
-    Write-Host "  Download: Ready at $downloadPath" -ForegroundColor Yellow
+    if (Test-Path "$env:USERPROFILE\Downloads\$dockerFileName") {
+        Write-Host "  Download: Ready at $env:USERPROFILE\Downloads\$dockerFileName" -ForegroundColor Yellow
+    }
 }
 
 Write-Host ""
 Write-Host "Next Steps:" -ForegroundColor Yellow
 
-if (!$dockerInstalled) {
+if (!$wslInstalled) {
+    Write-Host "  1. Install WSL first (install it from Microsoft Store or download from GitHub)" -ForegroundColor White
+    Write-Host "  2. Then install Docker Desktop" -ForegroundColor White
+}
+elseif (!$dockerInstalled) {
     Write-Host "  1. Install Docker Desktop from Downloads folder" -ForegroundColor White
     Write-Host "  2. Restart computer" -ForegroundColor White
     Write-Host "  3. Enable Kubernetes in Docker Desktop" -ForegroundColor White

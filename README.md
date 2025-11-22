@@ -80,6 +80,50 @@ kubectl apply -f k8s/service.yaml
 kubectl get service java-microservice-service
 ```
 
+## System Requirements
+
+### Local Windows Development Setup
+
+This project was developed and tested on Windows with WSL (Windows Subsystem for Linux).
+
+**WSL Installation Details:**
+```bash
+# Command used to check WSL version
+C:\> &"C:\Program Files\WSL\wsl.exe" --version
+
+# Output:
+WSL version: 2.6.2.0
+Kernel version: 6.6.87.2-1
+WSLg version: 1.0.71
+MSRDC version: 1.2.6353
+Direct3D version: 1.611.1-81528511
+DXCore version: 10.0.26100.1-240331-1435.ge-release
+Windows version: 10.0.19045.6466
+```
+
+**Installed WSL Distribution:**
+- **Ubuntu 24.04 LTS** (installed via `wsl --install Ubuntu-24.04`)
+
+**Prerequisites for Local Development:**
+- Windows 10 build 19041+ or Windows 11
+- WSL 2 installed ([Install WSL](https://github.com/microsoft/WSL/releases))
+- Docker Desktop for Windows with Kubernetes enabled
+- Java 17 or higher
+- Maven 3.6 or higher (can be installed in WSL)
+
+**Automated Setup:**
+Run the included PowerShell script to check and guide installation:
+```powershell
+.\setup-system.ps1
+```
+
+This script will:
+- ✅ Detect your system specifications
+- ✅ Check WSL installation and distributions
+- ✅ Check Docker Desktop installation
+- ✅ Verify Kubernetes is enabled
+- ✅ Provide download links and guidance if anything is missing
+
 ## API Endpoints
 
 | Endpoint | Method | Description |
