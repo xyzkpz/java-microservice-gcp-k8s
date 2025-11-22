@@ -42,11 +42,11 @@ docker build -t java-microservice:latest .
 *Tip: The first build may take a few minutes to download dependencies. Please be patient.*
 
 ### Step 4: Run the Application Container
-Start the application in a container. We map port `8080` inside the container to port `8080` on your Windows machine.
+Start the application in a container. We map port `8080` inside the container to port `8090` on your Windows machine.
 
 ```powershell
 # Run in the background (detached mode)
-docker run -d -p 8080:8080 --name java-app java-microservice:latest
+docker run -d -p 8090:8080 --name java-app java-microservice:latest
 ```
 
 ### Step 5: Verify the Application is Running
@@ -63,13 +63,13 @@ You can access the application using your web browser or terminal.
 
 **Option A: Web Browser**
 Click these links to open in your browser:
-*   **Home Page:** [http://localhost:8080](http://localhost:8080)
-*   **Health Check:** [http://localhost:8080/health](http://localhost:8080/health)
-*   **Configuration:** [http://localhost:8080/config](http://localhost:8080/config)
+*   **Home Page:** [http://localhost:8090](http://localhost:8090)
+*   **Health Check:** [http://localhost:8090/health](http://localhost:8090/health)
+*   **Configuration:** [http://localhost:8090/config](http://localhost:8090/config)
 
 **Option B: PowerShell / Terminal**
 ```powershell
-curl http://localhost:8080/health
+curl http://localhost:8090/health
 ```
 
 ---
@@ -99,8 +99,8 @@ docker logs -f java-app
 
 ## ❓ Troubleshooting
 
-**Error: "Bind for 0.0.0.0:8080 failed: port is already allocated"**
-*   **Cause:** Another application is using port 8080.
+**Error: "Bind for 0.0.0.0:8090 failed: port is already allocated"**
+*   **Cause:** Another application is using port 8090.
 *   **Fix:** Run the container on a different port (e.g., 9090):
     ```powershell
     docker run -d -p 9090:8080 --name java-app java-microservice:latest
