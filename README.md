@@ -39,6 +39,10 @@ A simple Java Spring Boot microservice designed to be deployed on Google Kuberne
 
 See the comprehensive [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed step-by-step instructions.
 
+### 🐳 Run with Docker
+
+Want to run locally without installing Java? Check out the [DOCKER_GUIDE.md](DOCKER_GUIDE.md).
+
 ### 🆓 Free Deployment Options
 
 **Don't have a GCP account or want to test for free?**
